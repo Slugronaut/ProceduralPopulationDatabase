@@ -131,7 +131,7 @@ For example, let's say I have my previous population of orc paladins. I can do s
 int uid = orcPaladins.RandomId();
 ```
 
-Let's say this uid ends up with a value of 7151. I can map this to a unique individual in my game that is created as a female orc paladin. If I later need to save the game or perhaps unload and area with this character in it I can destroy them and simply store this 32-bitunique id. Later I can use this unique id to re-create the exact same character later. But how will I know from this simple number what gender, race, and class they were? Well as I said before this unquie id maps within the total population which was sub-divided in a tree where each sun-division is a seperate level. So we can very quickly determine exactly in what portion of the census this id lies using this:  
+Let's say this uid ends up with a value of 7151. I can map this to a unique individual in my game that is created as a female orc paladin. If I later need to save the game or perhaps unload and area with this character in it I can destroy them and simply store this 32-bit unique id. Later, I can use this unique id to re-create the exact same character. But how will I know from this simple number what gender, race, and class they were? Well as I said before this unquie id maps within the total population which was sub-divided in a tree where each sun-division is a seperate level. So we can very quickly determine exactly in what portion of the census this id lies using this:  
 
 ```
 List<int> popCategories = census.MapId(uid); //uid is the value 7151 here
