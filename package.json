@@ -1,0 +1,19 @@
+{
+  "name": "com.postegames.proceduralpopulationdatabase",
+  "version": "1.0.0",
+  "displayName": "Procedural Population Database",
+  "description": "A monadic queryable database-like structure for categorized populations.",
+  "unity": "2022.2",
+  "keywords": [
+    "database",
+    "population",
+    "query",
+    "procedural"
+  ],
+  "author": {
+    "name": "Sluggy",
+    "email": "jcsluggy@gmail.com",
+    "url": "http://postexistence.com/"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,17 @@
+{
+    "name": "com.postegames.proceduralpopulationdatase.editor.tests",
+    "references": [
+        "GUID:a7ffbf1706cb1e64ca1b7ee8b1cce58c"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
