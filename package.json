@@ -15,5 +15,7 @@
     "email": "jcsluggy@gmail.com",
     "url": "http://postexistence.com/"
   },
-  "dependencies": {}
+  "dependencies": {
+	"com.unity.collections": ""
+  }
 }
