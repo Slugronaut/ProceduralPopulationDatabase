@@ -72,6 +72,8 @@ enum Classes
 
 Sounds great and all but what can we do with this? Well, read on!  
 
+<br />
+<br />
 
 ## Queryable  
 
@@ -115,6 +117,9 @@ IndexRange femaleOrcPaladins = paladinOrcPop.Ranges[1];
 ```
 
 By using IndexRanges rather than List<int> we can simply compact the data into runs of contiugous numbers and save a lot of space this way. At the same time we can still get a unique index for every person within the specified sub-division of a population.  
+
+<br />
+<br />
 
 ## Procedural
 
