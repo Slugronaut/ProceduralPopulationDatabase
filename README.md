@@ -85,7 +85,7 @@ PopulationSample paladinOrcPop = census.Query()
                 .Query((int)Depths.Race, (int)Races.Orc);
 ```
 
-With this statement we now have access to the exactly indices within the total 10,000 population that correspond to the male orc paladins and female orc paladins and nothing else. If we wanted we could drop, say, the race query and we'd get the list of all paladins for all races and sexes. Or we could specify the sex and narrow it down to a single IndexRange.
+With this statement we now have access to exactly the indices within the total 10,000 population that correspond to the male orc paladins and female orc paladins and nothing else. If we wanted we could drop, say, the race query and we'd get the list of all paladins for all races and sexes. Or we could specify the sex and narrow it down to a single IndexRange.
 
 ### IndexRange
 So what even is an IndexRange? Well it's defined simply as this:
