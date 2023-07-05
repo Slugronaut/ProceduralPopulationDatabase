@@ -18,6 +18,9 @@ namespace ProceduralPopulationDatabase
         public int EndIndex => StartIndex + Length - 1;
         public bool Contains(int index) => Length > 0 && index >= StartIndex && index <= EndIndex;
 
+        static List<IndexRange> TempList = new(16);
+
+
         public IndexRange(int startIndex, int length)
         {
             Assert.IsTrue(startIndex >= 0);
@@ -171,7 +174,7 @@ namespace ProceduralPopulationDatabase
             firstList.Sort((x, y) => x.StartIndex.CompareTo(y.StartIndex));
             secondList.Sort((x, y) => x.StartIndex.CompareTo(y.StartIndex));
 
-            List<IndexRange> intersection = new();
+            List<IndexRange> intersection = new(Math.Max(firstList.Count, secondList.Count));
             int i = 0, j = 0;
 
             while (i < firstList.Count && j < secondList.Count)
@@ -199,6 +202,46 @@ namespace ProceduralPopulationDatabase
             }
 
             return intersection;
+        }
+
+        /// <summary>
+        /// Non-allocating version.
+        /// </summary>
+        /// <param name="firstList"></param>
+        /// <param name="secondList"></param>
+        /// <returns></returns>
+        public static void IntersectingRanges(List<IndexRange> firstList, List<IndexRange> secondList, ref List<IndexRange> output)
+        {
+            firstList.Sort((x, y) => x.StartIndex.CompareTo(y.StartIndex));
+            secondList.Sort((x, y) => x.StartIndex.CompareTo(y.StartIndex));
+
+            output.Clear();
+            int i = 0, j = 0;
+
+            while (i < firstList.Count && j < secondList.Count)
+            {
+                if (firstList[i].StartIndex + firstList[i].Length >= secondList[j].StartIndex && secondList[j].StartIndex + secondList[j].Length >= firstList[i].StartIndex)
+                {
+                    int start = math.max(firstList[i].StartIndex, secondList[j].StartIndex);
+                    int end = math.min(firstList[i].StartIndex + firstList[i].Length - 1, secondList[j].StartIndex + secondList[j].Length - 1);
+                    int count = end - start + 1;
+
+                    if (count > 0 && firstList[i].Length > 0 && secondList[j].Length > 0)
+                    {
+                        output.Add(new IndexRange(start, count));
+                    }
+                }
+
+                if (firstList[i].StartIndex + firstList[i].Length < secondList[j].StartIndex + secondList[j].Length)
+                {
+                    i++;
+                }
+                else
+                {
+                    j++;
+                }
+            }
+
         }
 
         /// <summary>

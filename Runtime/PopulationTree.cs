@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -8,10 +9,7 @@ namespace ProceduralPopulationDatabase
     /// <summary>
     /// A tree that stores a total population that can be subdivided recursively by various categories.
     /// The indices in the tree represent unique ids within the population range and map back to each value
-    /// from 0 to the total population provided to the contructor. An internal array also
-    /// stores a 64-bit value for each unique id in the population that can store packed state info.
-    /// 
-    /// Thus an entire population can be stored in a simple tree and a native array that is 8-bytes x populationSize.
+    /// from 0 to the total population provided to the contructor.
     /// </summary>
     public class PopulationTree
     {
@@ -22,6 +20,7 @@ namespace ProceduralPopulationDatabase
         public int PopulationSize => Levels.Count;
 
 
+        #region Public Methods
         /// <summary>
         /// 
         /// </summary>
@@ -31,8 +30,6 @@ namespace ProceduralPopulationDatabase
             Levels = new PopulationLevel(0, popSize);
         }
 
-
-        #region Public Methods
         /// <summary>
         /// Creates a series of slices of the total population at the given level.
         /// </summary>
@@ -41,7 +38,7 @@ namespace ProceduralPopulationDatabase
         public void Slice(int depth, params float[] percents)
         {
             if (depth < 0)
-                throw new UnityException("Cannot slice the first level of the population. That is the full pop.");
+                throw new InvalidEnumArgumentException("depth", depth, typeof(int));
 
             TempSlices.Clear();
             GetSlicesAtDepth(depth, 0, Levels, TempSlices);
@@ -94,6 +91,24 @@ namespace ProceduralPopulationDatabase
                 ranges.Add(slices[i].Range);
 
             return ranges;
+        }
+
+        //// <summary>
+        /// Returns a list of <see cref="IndexRange"/>s representing the indices of a given level in the population.
+        /// This is a non-allocating version.
+        /// </summary>
+        /// <param name="depth"></param>
+        /// <param name="slices"></param>
+        public void GetPopulationIndexRangesList(int depth, ref List<IndexRange> output)
+        {
+            Assert.IsTrue(depth >= 0);
+            TempSlices.Clear();
+            GetSlicesAtDepth(depth, 0, Levels, TempSlices);
+
+            var slices = TempSlices;
+            output.Clear();
+            for (int i = 0; i < slices.Count; i++)
+                output.Add(slices[i].Range);
         }
 
         /// <summary>

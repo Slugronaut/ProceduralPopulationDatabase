@@ -159,6 +159,37 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         }
 
         [Test]
+        public void CompoundComplexNonAllocatingRangesFound()
+        {
+            var genders = CreateRangeList(
+                new IndexRange(0, 3),
+                new IndexRange(12, 5),
+                new IndexRange(50, 3),
+                new IndexRange(75, 3)
+                );
+            var homes = CreateRangeList(
+                new IndexRange(0, 50),
+                new IndexRange(75, 1)
+                );
+
+            //will have ranges of 0-3, 12-5, and 75-1
+            List<IndexRange> result1 = new List<IndexRange>(16);
+            List<IndexRange> result2 = new List<IndexRange>(16);
+
+            IndexRange.IntersectingRanges(homes, genders, ref result1);
+
+            //let's create yet another 'query' and then intersect. this will be for the back half: 50 to 100
+            var races = CreateRangeList(
+                new IndexRange(50, 50)
+                );
+
+            IndexRange.IntersectingRanges(result1, races, ref result2);
+            Assert.AreEqual(1, result2.Count);
+            Assert.AreEqual(75, result2[0].StartIndex);
+            Assert.AreEqual(1, result2[0].Length);
+        }
+
+        [Test]
         public void ZeroContentsOverlap()
         {
             var totalPop = CreateRangeList(

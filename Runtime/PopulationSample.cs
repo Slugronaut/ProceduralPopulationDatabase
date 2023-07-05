@@ -13,6 +13,11 @@ namespace ProceduralPopulationDatabase
         readonly public List<IndexRange> Ranges;
         readonly PopulationTree SourceCensus;
 
+        static List<IndexRange> TempList = new(16);
+        static List<IndexRange> TempList2 = new(16);
+
+
+        #region public
         /// <summary>
         /// 
         /// </summary>
@@ -32,14 +37,17 @@ namespace ProceduralPopulationDatabase
         /// <returns></returns>
         public PopulationSample Query(int level, int value)
         {
-            var ranges = SourceCensus.GetPopulationIndexRangesList(level);
+            SourceCensus.GetPopulationIndexRangesList(level, ref TempList2);
             int groupSize = SourceCensus.GetSliceGroupCount(level);
-            var queriedRanges = SelectNthElementForEveryGroupOfM(ranges, value, groupSize);
+            SelectNthElementForEveryGroupOfM(TempList2, value, groupSize, ref TempList);
 
-            var intersectingRanges = IndexRange.IntersectingRanges(Ranges, queriedRanges);
+            var intersectingRanges = IndexRange.IntersectingRanges(Ranges, TempList);
             return new PopulationSample(SourceCensus, intersectingRanges);
         }
+        #endregion
 
+
+        #region Static
         /// <summary>
         /// Each level of our population tree is split into groups of m elements but they are obtained as a flat array.
         /// This selects the nth element of every group of m.
@@ -65,11 +73,27 @@ namespace ProceduralPopulationDatabase
         /// <returns></returns>
         public static List<IndexRange> SelectNthElementForEveryGroupOfM(List<IndexRange> inputList, int n, int m)
         {
-            var outputList = new List<IndexRange>();
+            TempList.Clear();
+            var outputList = TempList;// new List<IndexRange>();
             for (int i = n; i < inputList.Count; i += m)
                 outputList.Add(inputList[i]);
 
             return outputList;
         }
+
+        /// <summary>
+        /// Each level of our population tree is split into groups of m elements but they are obtained as a flat array.
+        /// This selects the nth element of every group of m.
+        /// This is a non-allocating version.
+        /// </summary>
+        /// <returns></returns>
+        public static void SelectNthElementForEveryGroupOfM(List<IndexRange> inputList, int n, int m, ref List<IndexRange> output)
+        {
+            output.Clear();
+            for (int i = n; i < inputList.Count; i += m)
+                output.Add(inputList[i]);
+
+        }
+        #endregion
     }
 }
