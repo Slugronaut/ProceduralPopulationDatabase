@@ -165,7 +165,6 @@ namespace ProceduralPopulationDatabase.Editor.Tests
                 }
             }
 
-            tree.Remap
         }
 
 
