@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Collections;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 
 namespace ProceduralPopulationDatabase
 {
@@ -10,11 +12,14 @@ namespace ProceduralPopulationDatabase
     /// </summary>
     public class PopulationSample
     {
+        static List<IndexRange> TempList = new(16);
+        static List<IndexRange> TempList2 = new(16);
+
         readonly public List<IndexRange> Ranges;
         readonly PopulationTree SourceCensus;
 
-        static List<IndexRange> TempList = new(16);
-        static List<IndexRange> TempList2 = new(16);
+        public int Count => Ranges.Select(range => range.Length).Sum();
+
 
 
         #region public
@@ -29,8 +34,9 @@ namespace ProceduralPopulationDatabase
         }
 
         /// <summary>
-        /// Performs a query, retrieving all IndexRanges for the given percentage split of the given level of the <see cref="SourceCensus"/>
-        /// and then find the intersection of thise IndexRanges with this current samples IndexRanges.
+        /// Performs a query, retrieving all IndexRanges for the given percentage split
+        /// of the given level of the <see cref="SourceCensus"/>
+        /// and then finds the intersection of thise IndexRanges with this current sample's IndexRanges.
         /// </summary>
         /// <param name="level"></param>
         /// <param name="value"></param>
@@ -43,6 +49,25 @@ namespace ProceduralPopulationDatabase
 
             var intersectingRanges = IndexRange.IntersectingRanges(Ranges, TempList);
             return new PopulationSample(SourceCensus, intersectingRanges);
+        }
+
+        /// <summary>
+        /// Performs a query, retrieving all IndexRanges for the given percentage split
+        /// of the given level of the <see cref="SourceCensus"/>
+        /// and then removes them from this current sample's IndexRanges.
+        /// </summary>
+        /// <param name="level"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public PopulationSample Exclude(int level, int value)
+        {
+            SourceCensus.GetPopulationIndexRangesList(level, ref TempList2); //get the exclusion list
+            int groupSize = SourceCensus.GetSliceGroupCount(level);
+            SelectNthElementForEveryGroupOfM(TempList2, value, groupSize, ref TempList);
+
+            //NOTE: TempList2 is no longer needed so we are recycling it here as output from the difference function
+            IndexRange.DifferenceRanges(Ranges, TempList, ref TempList2); //exclude them from our current pop, note that
+            return new PopulationSample(SourceCensus, TempList2);
         }
         #endregion
 

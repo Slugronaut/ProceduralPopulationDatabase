@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -8,17 +9,16 @@ using UnityEngine.Assertions;
 
 namespace ProceduralPopulationDatabase
 {
+
     /// <summary>
-     /// Represents a range of indicies in an array.
-     /// </summary>
-    readonly public struct IndexRange
+    /// Represents a range of indicies in an array.
+    /// </summary>
+    readonly public struct IndexRange : IEnumerable<int>
     {
         readonly public int StartIndex;
         readonly public int Length;
         public int EndIndex => StartIndex + Length - 1;
         public bool Contains(int index) => Length > 0 && index >= StartIndex && index <= EndIndex;
-
-        static List<IndexRange> TempList = new(16);
 
 
         public IndexRange(int startIndex, int length)
@@ -29,52 +29,20 @@ namespace ProceduralPopulationDatabase
             Length = length;
         }
 
-
-        #region Static Methods
-        /// <summary>
-        /// Condenses a list of indices into as few IndexRanges as possible by combining
-        /// contiguous indicies into a single range.
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        public static List<IndexRange> Condense(List<int> list)
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
         {
-            List<IndexRange> intersection = new();
-
-            for (int i = 0; i < list.Count; i++)
-            {
-                int element = list[i];
-
-                for (int k = 0; k < intersection.Count; k++)
-                {
-                    var inter = intersection[k];
-                    //check to see if it's already in the intersection list, if so break out
-                    if (inter.Contains(element))
-                        goto next_element;
-
-                    //is it directly before a range?
-                    if (inter.StartIndex - 1 == element)
-                    {
-                        intersection[k] = new IndexRange(inter.StartIndex - 1, inter.Length + 1);
-                        goto next_element;
-                    }
-                    //how about directly after?
-                    if (inter.EndIndex + 1 == element)
-                    {
-                        intersection[k] = new IndexRange(inter.StartIndex, inter.Length + 1);
-                        goto next_element;
-                    }
-                }
-
-                //looks like this was totally unique, time to add a new intersection
-                intersection.Add(new IndexRange(element, 1));
-
-            next_element:;
-            }
-
-            return intersection;
+            for (int i = StartIndex; i <= EndIndex; i++)
+                yield return i;
         }
 
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            for (int i = StartIndex; i <= EndIndex; i++)
+                yield return i;
+        }
+
+
+        #region Static Methods
         /// <summary>
         /// Given a start value and range, return a list of IndexRanges representing a set of percentages of that range.
         /// The list of percentages must add up to approximately 1.0
@@ -346,6 +314,141 @@ namespace ProceduralPopulationDatabase
                 {
                     intersection.Insert(index, new IndexRange(element, 1));
                 }
+            }
+
+            return intersection;
+        }
+
+        /// <summary>
+        /// Performs a logical difference operation where the second list of ranges have all of their indices removed from any
+        /// overlapping ranges in the first list.
+        /// </summary>
+        /// <param name="primaryList"></param>
+        /// <param name="removedList"></param>
+        /// <returns></returns>
+        public static List<IndexRange> DifferenceRanges(List<IndexRange> primaryList, List<IndexRange> removedList)
+        {
+            List<IndexRange> result = new();
+
+            //flatten out the removal list
+            var numbersToRemove = removedList.SelectMany(r => r);
+            foreach (IndexRange range in primaryList)
+            {
+
+                if (range.Length > 0)
+                {
+                    var remainingNumbers = range.Except(numbersToRemove).ToList(); //can we get rid of the ToList() somehow?
+
+                    //reconstruct the contiguous ranges from what remains
+                    foreach (IndexRange remainingRange in Condense(remainingNumbers))
+                        result.Add(remainingRange);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Performs a logical difference operation where the second list of ranges have all of their indices removed from any
+        /// overlapping ranges in the first list.
+        /// </summary>
+        /// <param name="primaryList"></param>
+        /// <param name="removedList"></param>
+        /// <returns></returns>
+        public static void DifferenceRanges(List<IndexRange> primaryList, List<IndexRange> removedList, ref List<IndexRange> output)
+        {
+            output.Clear();
+
+            //flatten out the removal list
+            var numbersToRemove = removedList.SelectMany(r => r);
+            foreach (IndexRange range in primaryList)
+            {
+
+                if (range.Length > 0)
+                {
+                    var remainingNumbers = range.Except(numbersToRemove).ToList(); //can we get rid of the ToList() somehow?
+
+                    //reconstruct the contiguous ranges from what remains
+                    foreach (IndexRange remainingRange in CondenseIntoRanges(remainingNumbers))
+                        output.Add(remainingRange);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Condenses a list of indices into as few IndexRanges as possible by combining
+        /// contiguous indicies into a single range.
+        /// </summary>
+        /// <param name="numbers"></param>
+        /// <returns></returns>
+        private static IEnumerable<IndexRange> CondenseIntoRanges(List<int> numbers)
+        {
+            if (numbers.Count == 0)
+            {
+                yield break;
+            }
+
+            //numbers.Sort();
+
+            int startIndex = numbers[0];
+            int length = 1;
+
+            for (int i = 1; i < numbers.Count; i++)
+            {
+                if (numbers[i] == numbers[i - 1] + 1)
+                {
+                    length++;
+                }
+                else
+                {
+                    yield return new IndexRange(startIndex, length);
+                    startIndex = numbers[i];
+                    length = 1;
+                }
+            }
+
+            yield return new IndexRange(startIndex, length);
+        }
+
+        /// <summary>
+        /// Condenses a list of indices into as few IndexRanges as possible by combining
+        /// contiguous indicies into a single range.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        public static List<IndexRange> Condense(List<int> list)
+        {
+            List<IndexRange> intersection = new();
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                int element = list[i];
+
+                for (int k = 0; k < intersection.Count; k++)
+                {
+                    var inter = intersection[k];
+                    //check to see if it's already in the intersection list, if so break out
+                    if (inter.Contains(element))
+                        goto next_element;
+
+                    //is it directly before a range?
+                    if (inter.StartIndex - 1 == element)
+                    {
+                        intersection[k] = new IndexRange(inter.StartIndex - 1, inter.Length + 1);
+                        goto next_element;
+                    }
+                    //how about directly after?
+                    if (inter.EndIndex + 1 == element)
+                    {
+                        intersection[k] = new IndexRange(inter.StartIndex, inter.Length + 1);
+                        goto next_element;
+                    }
+                }
+
+                //looks like this was totally unique, time to add a new intersection
+                intersection.Add(new IndexRange(element, 1));
+
+            next_element:;
             }
 
             return intersection;

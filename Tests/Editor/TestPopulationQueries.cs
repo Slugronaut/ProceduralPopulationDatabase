@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Globalization;
 
 namespace ProceduralPopulationDatabase.Editor.Tests
 {
@@ -243,6 +244,34 @@ namespace ProceduralPopulationDatabase.Editor.Tests
                 .Query((int)Depths.Class, (int)Classes.Fighter);
 
             Assert.AreEqual(0, paladinOrcPop.Ranges.Count);
+        }
+
+        /// <summary>
+        /// Assert that we can exlude all of the first split in the tree.
+        /// </summary>
+        [Test]
+        public void ExcludeAllFemales()
+        {
+            var tree = GenerateTree();
+            var males = tree.Query()
+                .Exclude((int)Depths.Gender, (int)Genders.Female);
+
+            Assert.AreEqual(1, males.Ranges.Count);
+            Assert.AreEqual(5000, males.Count);
+            Assert.AreEqual(0, males.Ranges[0].StartIndex);
+            Assert.AreEqual(4999, males.Ranges[0].EndIndex);
+            Assert.AreEqual(5000, males.Ranges[0].Length);
+        }
+
+        [Test]
+        public void ExcludeAllPaladins()
+        {
+            var tree = GenerateTree();
+            var nonPallys = tree.Query()
+                .Exclude((int)Depths.Class, (int)Classes.Paladin);
+
+            //we've effectively taken a set of 36 ranges, removing 6, and then condensing the rest into as few as possible
+            Assert.AreEqual(7, nonPallys.Ranges.Count);
         }
     }
 

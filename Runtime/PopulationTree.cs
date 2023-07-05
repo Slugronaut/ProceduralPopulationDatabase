@@ -14,9 +14,25 @@ namespace ProceduralPopulationDatabase
     public class PopulationTree
     {
         static List<PopulationLevel> TempSlices = new(8);   //cached to help avoid garbage
+        static List<IndexRange> TempRanges = new(16);
         readonly PopulationLevel Levels;
         
-
+        public int MaxDepth
+        {
+            get
+            {
+                var root = Levels;
+                int depth = 1;
+                while(root != null)
+                {
+                    if ((root.Children?.Length ?? 0) < 1)
+                        break;
+                    root = root.Children[0];
+                    depth++;
+                }
+                return depth;
+            }
+        }
         public int PopulationSize => Levels.Count;
 
 
@@ -148,12 +164,39 @@ namespace ProceduralPopulationDatabase
         }
 
         /// <summary>
-        /// 
+        /// Remaps a uid from the population back to the indicies of each level of the tree in which it lies.
+        /// This can be used to transform a uid which is an index of the total population and get the individual
+        /// queries used to create it.
         /// </summary>
+        /// <param name="uid"></param>
         /// <returns></returns>
-        public int RandomId()
+        public List<int> Remap(int uid)
         {
-            throw new UnityException("Not yet implemented");
+            int maxDepth = MaxDepth;
+            List<int> result = new(MaxDepth);
+
+            int depth = 0;
+            TempSlices.Clear();
+            while(depth < maxDepth)
+            {
+                TempRanges.Clear();
+                GetPopulationIndexRangesList(depth, ref TempRanges);
+                int containingIndex = -1;
+                var ranges = TempRanges;
+                for(int i = 0; i < ranges.Count; i++)
+                {
+                    var range = ranges[i];
+                    if (range.Contains(uid))
+                        containingIndex = i;
+                }
+
+                if (containingIndex == -1)
+                    throw new InaccessabePopulationException(uid);
+                result.Add(containingIndex);
+                depth++;
+            }
+
+            return result;
         }
         #endregion
 

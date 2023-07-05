@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using NUnit.Framework;
 
 namespace ProceduralPopulationDatabase.Editor.Tests
@@ -293,6 +295,61 @@ namespace ProceduralPopulationDatabase.Editor.Tests
 
             Assert.AreEqual(1, result[0].StartIndex);
             Assert.AreEqual(12, result[0].EndIndex);
+        }
+
+        [Test]
+        public void ExludeOneListFromMiddleOfAnother()
+        {
+            var inc = CreateRangeList(new IndexRange(0, 10));
+            var ex = CreateRangeList(new IndexRange(3, 2));
+            List<IndexRange> result = new();
+            IndexRange.DifferenceRanges(inc, ex, ref result);
+
+            int[] expected = { 0, 1, 2, 5, 6, 7, 8, 9, };
+            int i = 0;
+            Assert.AreEqual(2, result.Count);
+
+            foreach(var val in result[0])
+            {
+                Assert.AreEqual(expected[i], val);
+                i++;
+
+            }
+
+            foreach (var val in result[1])
+            {
+                Assert.AreEqual(expected[i], val);
+                i++;
+            }
+        }
+
+        [Test]
+        public void ExludeOneListFromMiddleOfSeveralOthers()
+        {
+            var inc = CreateRangeList(new IndexRange(0, 10), new IndexRange(15, 5));
+            var ex = CreateRangeList(new IndexRange(3, 2));
+            List<IndexRange> result = new();
+            IndexRange.DifferenceRanges(inc, ex, ref result);
+
+            int[] expected = { 0, 1, 2, 5, 6, 7, 8, 9, 15, 16, 17, 18, 19};
+            int i = 0;
+            Assert.AreEqual(3, result.Count);
+            Assert.AreEqual(3, result[0].Length);
+            Assert.AreEqual(5, result[1].Length);
+            Assert.AreEqual(5, result[2].Length);
+
+            foreach (var val in result[0])
+            {
+                Assert.AreEqual(expected[i], val);
+                i++;
+
+            }
+
+            foreach (var val in result[1])
+            {
+                Assert.AreEqual(expected[i], val);
+                i++;
+            }
         }
 
     }
