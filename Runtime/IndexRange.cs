@@ -369,7 +369,7 @@ namespace ProceduralPopulationDatabase
                     var remainingNumbers = range.Except(numbersToRemove).ToList(); //can we get rid of the ToList() somehow?
 
                     //reconstruct the contiguous ranges from what remains
-                    foreach (IndexRange remainingRange in CondenseIntoRanges(remainingNumbers))
+                    foreach (IndexRange remainingRange in CondenseEnumerable(remainingNumbers))
                         output.Add(remainingRange);
                 }
             }
@@ -381,7 +381,7 @@ namespace ProceduralPopulationDatabase
         /// </summary>
         /// <param name="numbers"></param>
         /// <returns></returns>
-        private static IEnumerable<IndexRange> CondenseIntoRanges(List<int> numbers)
+        public static IEnumerable<IndexRange> CondenseEnumerable(List<int> numbers)
         {
             if (numbers.Count == 0)
             {

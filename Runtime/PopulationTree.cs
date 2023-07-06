@@ -155,13 +155,7 @@ namespace ProceduralPopulationDatabase
         /// Creates a monadic type that can be queiried to extract specific ranges of the total population in this tree.
         /// </summary>
         /// <returns></returns>
-        public PopulationSample Query()
-        {
-            return new PopulationSample(this, new List<IndexRange>(1)
-                {
-                    Levels.Range
-                });
-        }
+        public PopulationSample Query => new(this, new List<IndexRange>(1) { Levels.Range });
 
         /// <summary>
         /// Remaps a uid from the population back to the indicies of each level of the tree in which it lies.

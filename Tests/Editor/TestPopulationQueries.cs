@@ -69,7 +69,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
             tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
             tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
-            var sample = tree.Query();
+            var sample = tree.Query;
             Assert.IsNotNull(sample);
         }
 
@@ -81,7 +81,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
             tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
             tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
-            var sample = tree.Query();
+            var sample = tree.Query;
             Assert.AreEqual(1, sample.Ranges.Count);
             Assert.AreEqual(0, sample.Ranges[0].StartIndex);
             Assert.AreEqual(DefaultPopSize-1, sample.Ranges[0].EndIndex);
@@ -97,7 +97,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
             tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             //requesting a query of the root level. we'll ask for the 0th element because there is only 1 at this level
-            var sampleLeft = tree.Query().Query(0, 0);
+            var sampleLeft = tree.Query.Query(0, 0);
             Assert.AreEqual(1, sampleLeft.Ranges.Count);
             Assert.AreEqual(0, sampleLeft.Ranges[0].StartIndex);
             Assert.AreEqual(DefaultPopSize - 1, sampleLeft.Ranges[0].EndIndex);
@@ -112,13 +112,13 @@ namespace ProceduralPopulationDatabase.Editor.Tests
             tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
             tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
-            var sampleLeft = tree.Query().Query(1, 0);
+            var sampleLeft = tree.Query.Query(1, 0);
             Assert.AreEqual(1,                          sampleLeft.Ranges.Count);
             Assert.AreEqual(0,                          sampleLeft.Ranges[0].StartIndex);
             Assert.AreEqual((DefaultPopSize / 2) - 1,   sampleLeft.Ranges[0].EndIndex);
             Assert.AreEqual(DefaultPopSize / 2,         sampleLeft.Ranges[0].Length);
 
-            var sampleRight = tree.Query().Query(1, 1);
+            var sampleRight = tree.Query.Query(1, 1);
             Assert.AreEqual(1, sampleRight.Ranges.Count);
             Assert.AreEqual(DefaultPopSize / 2, sampleRight.Ranges[0].StartIndex);
             Assert.AreEqual(DefaultPopSize - 1, sampleRight.Ranges[0].EndIndex);
@@ -132,7 +132,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void QueryForOrcPopulationIsAccurate()
         {
             var tree = GenerateTree();
-            var orcPop = tree.Query().Query((int)Depths.Race, (int)Races.Orc);
+            var orcPop = tree.Query.Query((int)Depths.Race, (int)Races.Orc);
 
             Assert.AreEqual(2, orcPop.Ranges.Count);
 
@@ -152,7 +152,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void QueryForPaladinPopulationIsAccurate()
         {
             var tree = GenerateTree();
-            var paladinPop = tree.Query()
+            var paladinPop = tree.Query
                 .Query((int)Depths.Class, (int)Classes.Paladin);
 
             int femaleHumanPaladin = 3;
@@ -170,7 +170,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void QueryForOrcPaldinPopulationIsAccurate()
         {
             var tree = GenerateTree();
-            var orcPaladinPop = tree.Query()
+            var orcPaladinPop = tree.Query
                 .Query((int)Depths.Race, (int)Races.Orc)
                 .Query((int)Depths.Class, (int)Classes.Paladin);
 
@@ -196,7 +196,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void QueryForPaladinOrcPopulationIsAccurate()
         {
             var tree = GenerateTree();
-            var paladinOrcPop = tree.Query()
+            var paladinOrcPop = tree.Query
                 .Query((int)Depths.Class, (int)Classes.Paladin)
                 .Query((int)Depths.Race, (int)Races.Orc);
 
@@ -220,7 +220,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void QueryForFemaleHumanFighterPopulationIsAccurate()
         {
             var tree = GenerateTree();
-            var paladinOrcPop = tree.Query()
+            var paladinOrcPop = tree.Query
                 .Query((int)Depths.Gender,  (int)Genders.Female)
                 .Query((int)Depths.Race,    (int)Races.Human)
                 .Query((int)Depths.Class,   (int)Classes.Fighter);
@@ -239,7 +239,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void QueryForClassAfterExcludingItGivesEmptyPopulation()
         {
             var tree = GenerateTree();
-            var paladinOrcPop = tree.Query()
+            var paladinOrcPop = tree.Query
                 .Query((int)Depths.Class, (int)Classes.Paladin)
                 .Query((int)Depths.Class, (int)Classes.Fighter);
 
@@ -253,7 +253,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void ExcludeAllFemales()
         {
             var tree = GenerateTree();
-            var males = tree.Query()
+            var males = tree.Query
                 .Exclude((int)Depths.Gender, (int)Genders.Female);
 
             Assert.AreEqual(1, males.Ranges.Count);
@@ -267,7 +267,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void ExcludeAllPaladins()
         {
             var tree = GenerateTree();
-            var nonPallys = tree.Query()
+            var nonPallys = tree.Query
                 .Exclude((int)Depths.Class, (int)Classes.Paladin);
 
             //we've effectively taken a set of 36 ranges, removing 6, and then condensing the rest into as few as possible

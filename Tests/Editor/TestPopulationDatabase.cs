@@ -74,7 +74,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void DatabaseCreation()
         {
             var (db, tree) = GenerateDb();
-            var orcPallys = tree.Query()
+            var orcPallys = tree.Query
                 .Query((int)Depths.Race, (int)Races.Orc)
                 .Query((int)Depths.Class, (int)Classes.Paladin);
 
@@ -90,7 +90,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void ReadDefaultUsedStateAsUnused()
         {
             var (db, tree) = GenerateDb();
-            var orcPallys = tree.Query()
+            var orcPallys = tree.Query
                 .Query((int)Depths.Race, (int)Races.Orc)
                 .Query((int)Depths.Class, (int)Classes.Paladin);
 
@@ -108,7 +108,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void ReadWriteUsedState()
         {
             var (db, tree) = GenerateDb();
-            var orcPallys = tree.Query()
+            var orcPallys = tree.Query
                 .Query((int)Depths.Race, (int)Races.Orc)
                 .Query((int)Depths.Class, (int)Classes.Paladin);
 
@@ -137,11 +137,11 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void WritingToOneSampleDoesntAffectAnotherSample()
         {
             var (db, tree) = GenerateDb();
-            var orcPallys = tree.Query()
+            var orcPallys = tree.Query
                 .Query((int)Depths.Race, (int)Races.Orc)
                 .Query((int)Depths.Class, (int)Classes.Paladin);
 
-            var allButOrcPallys = tree.Query()
+            var allButOrcPallys = tree.Query
                 .Exclude((int)Depths.Race, (int)Races.Orc)
                 .Exclude((int)Depths.Class, (int)Classes.Paladin);
 

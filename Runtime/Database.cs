@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Assertions;
 
 namespace ProceduralPopulationDatabase
@@ -11,7 +12,8 @@ namespace ProceduralPopulationDatabase
     /// </summary>
     public class Database
     {
-        NativeArray<ulong> States;
+        public readonly PopulationTree TotalPopulation;
+        protected NativeArray<ulong> States;
         protected Random Randomizer;
 
         static readonly List<int> TempInUse = new(16);
@@ -20,9 +22,10 @@ namespace ProceduralPopulationDatabase
 
 
         #region Public Methods
-        public Database(int seed, PopulationTree sourceCensus)
+        public Database(int seed, PopulationTree totalPopulation)
         {
-            States = new(sourceCensus.PopulationSize, Allocator.Persistent);
+            TotalPopulation = totalPopulation;
+            States = new(totalPopulation.PopulationSize, Allocator.Persistent, NativeArrayOptions.ClearMemory);
             Randomizer = new Random(seed);
         }
 
@@ -33,6 +36,16 @@ namespace ProceduralPopulationDatabase
         public void SetSeed(int seed)
         {
             Randomizer = new Random(seed);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public unsafe void ResetPopulationStates()
+        {
+            UnsafeUtility.MemClear(
+                    NativeArrayUnsafeUtility.GetUnsafeBufferPointerWithoutChecks(States),
+                    UnsafeUtility.SizeOf<ulong>() * TotalPopulation.PopulationSize);
         }
 
         /// <summary>
@@ -74,8 +87,10 @@ namespace ProceduralPopulationDatabase
 
             TempInUse.Clear();
             TempNotInUse.Clear();
-            foreach (var range in pop.Ranges)
+            var ranges = pop.Ranges;
+            for(int rangeIndex = 0; rangeIndex < ranges.Count; rangeIndex++)
             {
+                var range = ranges[rangeIndex];
                 for (int i = range.StartIndex; i <= range.EndIndex; i++)
                 {
                     if (IsIdInUse(i))
@@ -122,9 +137,9 @@ namespace ProceduralPopulationDatabase
             int needed = count;
             ids.Clear();
             var ranges = pop.Ranges;
-            for (int i = 0; i < ranges.Count; i++)
+            for (int rangeIndex = 0; rangeIndex < ranges.Count; rangeIndex++)
             {
-                var range = ranges[i];
+                var range = ranges[rangeIndex];
                 for (int uid = range.StartIndex; uid <= range.EndIndex; uid++)
                 {
                     bool inUse = IsIdInUse(uid);
