@@ -59,7 +59,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void DepthZeroIsValidAfterSlicing()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, LevelOneSlices);
+            tree.Slice(1, LevelOneSlices);
 
             var levelZeroRanges = tree.GetPopulationIndexRanges(0);
             var total = levelZeroRanges.Sum(range => range.Length);
@@ -71,7 +71,7 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void DepthOneIsValidAfterSlicing()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, LevelOneSlices);
+            tree.Slice(1, LevelOneSlices);
 
 
             var levelOneRanges = tree.GetPopulationIndexRanges(1).ToArray();
@@ -84,9 +84,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void DepthZeroValidAfter3Slices()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             var levelZeroRanges = tree.GetPopulationIndexRanges(0);
             var total = levelZeroRanges.Sum(range => range.Length);
@@ -98,9 +98,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void DepthOneValidAfter3Slices()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             //level 1
             var levelOneRanges = tree.GetPopulationIndexRanges(1);
@@ -114,9 +114,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void DepthTwoValidAfter3Slices()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             //level 2
             var levelTwoRanges = tree.GetPopulationIndexRanges(2).ToArray();
@@ -153,9 +153,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void DepthThreeValidAfter3Slices()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             //level 3
             var levelThreeRanges = tree.GetPopulationIndexRanges(3).ToArray();

@@ -49,15 +49,15 @@ namespace ProceduralPopulationDatabase
         /// <summary>
         /// Creates a series of slices of the total population at the given level.
         /// </summary>
-        /// <param name="depth">The level that should be further sliced into sublevels.</param>
+        /// <param name="depth">The level that you would like to create. Effectively the level previous to this will be root of this one. Cannot be zero.</param>
         /// <param name="percents"></param>
         public void Slice(int depth, params float[] percents)
         {
-            if (depth < 0)
+            if (depth < 1)
                 throw new InvalidEnumArgumentException("depth", depth, typeof(int));
 
             TempSlices.Clear();
-            GetSlicesAtDepth(depth, 0, Levels, TempSlices);
+            GetSlicesAtDepth(depth-1, 0, Levels, TempSlices);
 
             var slices = TempSlices;
             for(int si = 0; si < slices.Count; si++)

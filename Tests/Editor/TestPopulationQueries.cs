@@ -53,9 +53,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         PopulationTree GenerateTree()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice((int)Depths.Gender - 1, GenderSlices);
-            tree.Slice((int)Depths.Race - 1, RaceSlices);
-            tree.Slice((int)Depths.Class - 1, ClassSlices);
+            tree.Slice((int)Depths.Gender, GenderSlices);
+            tree.Slice((int)Depths.Race, RaceSlices);
+            tree.Slice((int)Depths.Class, ClassSlices);
             return tree;
         }
         #endregion
@@ -65,9 +65,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void BasicQueryIsNotNull()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             var sample = tree.Query;
             Assert.IsNotNull(sample);
@@ -77,9 +77,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void RootQueryContainsFullRange()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             var sample = tree.Query;
             Assert.AreEqual(1, sample.Ranges.Count);
@@ -92,9 +92,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void RequeryOfRootContainsCorrectSlice()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             //requesting a query of the root level. we'll ask for the 0th element because there is only 1 at this level
             var sampleLeft = tree.Query.Query(0, 0);
@@ -108,9 +108,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         public void QueryDepth1ContainsCorrectRanges()
         {
             var tree = new PopulationTree(DefaultPopSize);
-            tree.Slice(0, new float[] { 0.5f, 0.5f });
-            tree.Slice(1, new float[] { 0.35f, 0.40f, 0.25f });
-            tree.Slice(2, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.Slice(2, new float[] { 0.35f, 0.40f, 0.25f });
+            tree.Slice(3, new float[] { 0.1f, 0.1f, 0.25f, 0.30f, 0.1852f, 0.0648f });
 
             var sampleLeft = tree.Query.Query(1, 0);
             Assert.AreEqual(1,                          sampleLeft.Ranges.Count);

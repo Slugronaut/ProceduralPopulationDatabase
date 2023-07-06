@@ -52,9 +52,9 @@ namespace ProceduralPopulationDatabase.Editor.Tests
         PopulationTree GenerateTree()
         {
             var tree = new PopulationTree(PopSize);
-            tree.Slice((int)Depths.Gender - 1, GenderSlices);
-            tree.Slice((int)Depths.Race - 1, RaceSlices);
-            tree.Slice((int)Depths.Class - 1, ClassSlices);
+            tree.Slice((int)Depths.Gender, GenderSlices);
+            tree.Slice((int)Depths.Race, RaceSlices);
+            tree.Slice((int)Depths.Class, ClassSlices);
             return tree;
         }
 
