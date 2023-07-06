@@ -219,5 +219,32 @@ namespace ProceduralPopulationDatabase.Editor.Tests
 
         }
 
+        [Test]
+        public void JaggedSlice()
+        {
+            var tree = new PopulationTree(DefaultPopSize);
+            tree.Slice(1, new float[] { 0.5f, 0.5f });
+            tree.JaggedSlice(2, new float[][] {
+                new float[] { 0.4f, 0.6f },
+                new float[] { 0.6f, 0.4f },
+            });
+            Assert.AreEqual(10_000, tree.PopulationSize);
+
+
+            var l1 = tree.GetPopulationIndexRanges(1).ToArray();
+            Assert.AreEqual(2, l1.Length);
+            Assert.AreEqual(5_000, l1[0].Length);
+            Assert.AreEqual(5_000, l1[1].Length);
+
+            
+            var l2 = tree.GetPopulationIndexRanges(2).ToArray();
+            Assert.AreEqual(4, l2.Length);
+            Assert.AreEqual(2_000, l2[0].Length);
+            Assert.AreEqual(3_000, l2[1].Length);
+            Assert.AreEqual(3_000, l2[2].Length);
+            Assert.AreEqual(2_000, l2[3].Length);
+            
+        }
+
     }
 }
