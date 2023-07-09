@@ -63,10 +63,10 @@ namespace ProceduralPopulationDatabase
             TempSlices.Clear();
             GetSlicesAtDepth(depth-1, 0, Levels, TempSlices);
 
-            var slices = TempSlices;
-            for(int sliceIndex = 0; sliceIndex < slices.Count; sliceIndex++)
+            var parentSlices = TempSlices;
+            for(int sliceIndex = 0; sliceIndex < parentSlices.Count; sliceIndex++)
             {
-                var parentSlice = slices[sliceIndex];
+                var parentSlice = parentSlices[sliceIndex];
                 var parentRange = parentSlice.Range;
                 parentSlice.Children = new PopulationLevel[percents.Length];
                 var ranges = IndexRange.CalculatePercentageRanges(parentRange.StartIndex, parentRange.Length, percents);
@@ -129,34 +129,6 @@ namespace ProceduralPopulationDatabase
                 for (int rangeIndex = 0; rangeIndex < ranges.Length; rangeIndex++)
                     parentSlice.Children[rangeIndex] = new PopulationLevel(ranges[rangeIndex]);
             }
-        }
-
-        /// <summary>
-        /// Creates a slice of the total population at a given level for a specific sibling of that level.
-        /// This version allows specifying the percentages for each individual child.
-        /// <seealso cref="Slice(int, float[])"/>
-        /// </summary>
-        /// <param name="depth"></param>
-        /// <param name="childIndex"></param>
-        /// <param name="percents"></param>
-        public PopulationLevel JaggedSlice(int depth, int depthRoot, int childIndex, float[] percents)
-        {
-            Assert.IsTrue(depth > 0, "A depth of zero cannot be specified as that already exists as the root.");
-            Assert.IsTrue(depth <= this.MaxDepth, $"The depth specified is too great to be made the children of the current max depth. The current max depth allowed is {MaxDepth}, you specified {depth}.");
-
-            TempSlices.Clear();
-            GetSlicesAtDepth(depth - 1, 0, Levels, TempSlices);
-
-            int si = childIndex;
-            var slices = TempSlices;
-            var parentSlice = slices[si];
-            var parentRange = parentSlice.Range;
-            parentSlice.Children = new PopulationLevel[percents.Length];
-            var ranges = IndexRange.CalculatePercentageRanges(parentRange.StartIndex, parentRange.Length, percents);
-            for (int ri = 0; ri < ranges.Length; ri++)
-                parentSlice.Children[ri] = new PopulationLevel(ranges[ri]);
-
-            return parentSlice;
         }
 
         /// <summary>
