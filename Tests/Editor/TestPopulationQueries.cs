@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace ProceduralPopulationDatabase.Editor.Tests
@@ -272,6 +273,30 @@ namespace ProceduralPopulationDatabase.Editor.Tests
 
             //we've effectively taken a set of 36 ranges, removing 6, and then condensing the rest into as few as possible
             Assert.AreEqual(7, nonPallys.Ranges.Count);
+        }
+
+        /// <summary>
+        /// Proves that we can remap our uid back to the population sample range.
+        /// </summary>
+        [Test]
+        public void PopTreeRemap()
+        {
+            var tree = GenerateTree();
+            var paladinOrcPop = tree.Query
+                .Query((int)Depths.Gender, (int)Genders.Female)
+                .Query((int)Depths.Race, (int)Races.Human)
+                .Query((int)Depths.Class, (int)Classes.Fighter);
+
+            //everyone in this population should match this spec
+            foreach (var uid in paladinOrcPop)
+            {
+                //1, 0, 3
+                var temp = tree.Remap(uid);
+                Assert.AreEqual(3, temp.Count);
+                Assert.AreEqual((int)Genders.Female,    temp[0]); // 1
+                Assert.AreEqual((int)Races.Human,       temp[1]); // 0
+                Assert.AreEqual((int)Classes.Fighter,   temp[2]); // 3
+            }
         }
     }
 

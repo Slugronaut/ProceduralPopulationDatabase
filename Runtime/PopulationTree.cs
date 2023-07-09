@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine.Assertions;
 
@@ -14,6 +12,7 @@ namespace ProceduralPopulationDatabase
     public class PopulationTree
     {
         static List<PopulationLevel> TempSlices = new(8);   //cached to help avoid garbage
+        static List<int> CachedRemap = new();
         static List<IndexRange> TempRanges = new(16);
         readonly PopulationLevel Levels;
         
@@ -221,36 +220,45 @@ namespace ProceduralPopulationDatabase
         /// Remaps a uid from the population back to the indicies of each level of the tree in which it lies.
         /// This can be used to transform a uid which is an index of the total population and get the individual
         /// queries used to create it.
+        /// 
+        /// Please note that the returned list is interally cached and should be considered volitile.
+        /// Assign it's values before making any successive calls to this method. NEVER cache a reference to it.
         /// </summary>
         /// <param name="uid"></param>
         /// <returns></returns>
         public List<int> Remap(int uid)
         {
             int maxDepth = MaxDepth;
-            List<int> result = new(MaxDepth);
+            CachedRemap.Clear();
 
-            int depth = 0;
+            int depth = 1;
+            int previousDepthSize = 1; //multiplier that we need to determin what the 'true' index is in an otherwise flattened depth of the hierarchy
             TempSlices.Clear();
             while(depth < maxDepth)
             {
                 TempRanges.Clear();
                 GetPopulationIndexRangesList(depth, ref TempRanges);
-                int containingIndex = -1;
+                int flattenedIndex = -1;
                 var ranges = TempRanges;
                 for(int i = 0; i < ranges.Count; i++)
                 {
                     var range = ranges[i];
                     if (range.Contains(uid))
-                        containingIndex = i;
+                        flattenedIndex = i;
                 }
 
-                if (containingIndex == -1)
+                if (flattenedIndex == -1)
                     throw new InaccessabePopulationException(uid);
-                result.Add(containingIndex);
+
+                //the list of ranges is flattened but we need to translate back
+                //into a set of sets that the original hierarchy represented.
+                int setIndex = flattenedIndex % (TempRanges.Count / previousDepthSize);
+                previousDepthSize *= GetSliceGroupCount(depth); //keep multiplying with the current group count so we can track sets
+                CachedRemap.Add(setIndex);
                 depth++;
             }
 
-            return result;
+            return CachedRemap;
         }
         #endregion
 
