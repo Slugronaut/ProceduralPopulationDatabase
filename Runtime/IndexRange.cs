@@ -81,6 +81,43 @@ namespace ProceduralPopulationDatabase
         }
 
         /// <summary>
+        /// Given a start value and range, return a list of IndexRanges representing a set of percentages of that range.
+        /// The list of percentages must add up to approximately 1.0
+        /// </summary>
+        /// <param name="startValue"></param>
+        /// <param name="endValue"></param>
+        /// <param name="percentages"></param>
+        /// <returns></returns>
+        public static IndexRange[] CalculatePercentageRanges(int start, int len, double[] percentages)
+        {
+            float totalPercentage = (float)percentages.Sum();
+            Assert.IsTrue(Mathf.Approximately(totalPercentage, 1.0f));
+
+
+            IndexRange[] percentageRanges = new IndexRange[percentages.Length];
+            int totalRangeLen = len;
+            int accum = totalRangeLen;
+
+            for (int i = 0; i < percentages.Length; i++)
+            {
+                int rangeLength = (int)Math.Round(totalRangeLen * percentages[i]);
+                percentageRanges[i] = new(start, rangeLength);
+                start += rangeLength;
+                accum -= rangeLength;
+            }
+
+            //adjust the last range to cover any remaining values, not technically accurate but hey, we just need something close enough
+            if (percentageRanges.Length > 0 && accum > 0)
+            {
+                IndexRange lastRange = percentageRanges[^1];
+                lastRange = new IndexRange(lastRange.StartIndex, lastRange.Length + accum);
+                percentageRanges[^1] = lastRange;
+            }
+
+            return percentageRanges;
+        }
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="firstList"></param>

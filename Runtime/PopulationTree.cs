@@ -64,20 +64,20 @@ namespace ProceduralPopulationDatabase
             GetSlicesAtDepth(depth-1, 0, Levels, TempSlices);
 
             var slices = TempSlices;
-            for(int si = 0; si < slices.Count; si++)
+            for(int sliceIndex = 0; sliceIndex < slices.Count; sliceIndex++)
             {
-                var parentSlice = slices[si];
+                var parentSlice = slices[sliceIndex];
                 var parentRange = parentSlice.Range;
                 parentSlice.Children = new PopulationLevel[percents.Length];
                 var ranges = IndexRange.CalculatePercentageRanges(parentRange.StartIndex, parentRange.Length, percents);
-                for (int ri = 0; ri < ranges.Length; ri++)
-                    parentSlice.Children[ri] = new PopulationLevel(ranges[ri]);
+                for (int rangeIndex = 0; rangeIndex < ranges.Length; rangeIndex++)
+                    parentSlice.Children[rangeIndex] = new PopulationLevel(ranges[rangeIndex]);
             }
         }
 
         /// <summary>
         /// Creates a slice of the total population at a given level for a specific sibling of that level.
-        /// This version allows overriding the 
+        /// This version allows specifying the percentages for each individual child.
         /// <seealso cref="Slice(int, float[])"/>
         /// </summary>
         /// <param name="depth"></param>
@@ -92,15 +92,71 @@ namespace ProceduralPopulationDatabase
             GetSlicesAtDepth(depth - 1, 0, Levels, TempSlices);
 
             var slices = TempSlices;
-            for (int si = 0; si < slices.Count; si++)
+            for (int sliceIndex = 0; sliceIndex < slices.Count; sliceIndex++)
             {
-                var parentSlice = slices[si];
+                var parentSlice = slices[sliceIndex];
                 var parentRange = parentSlice.Range;
-                parentSlice.Children = new PopulationLevel[percents[si].Length];
-                var ranges = IndexRange.CalculatePercentageRanges(parentRange.StartIndex, parentRange.Length, percents[si]);
-                for (int ri = 0; ri < ranges.Length; ri++)
-                    parentSlice.Children[ri] = new PopulationLevel(ranges[ri]);
+                parentSlice.Children = new PopulationLevel[percents[sliceIndex].Length];
+                var ranges = IndexRange.CalculatePercentageRanges(parentRange.StartIndex, parentRange.Length, percents[sliceIndex]);
+                for (int rangeIndex = 0; rangeIndex < ranges.Length; rangeIndex++)
+                    parentSlice.Children[rangeIndex] = new PopulationLevel(ranges[rangeIndex]);
             }
+        }
+
+        /// <summary>
+        /// Creates a slice of the total population at a given level for a specific sibling of that level.
+        /// This version allows specifying the percentages for each individual child.
+        /// <seealso cref="Slice(int, float[])"/>
+        /// </summary>
+        /// <param name="depth"></param>
+        /// <param name="childIndex"></param>
+        /// <param name="percents"></param>
+        public void JaggedSlice(int depth, double[][] percents)
+        {
+            Assert.IsTrue(depth > 0, "A depth of zero cannot be specified as that already exists as the root.");
+            Assert.IsTrue(depth <= this.MaxDepth, $"The depth specified is too great to be made the children of the current max depth. The current max depth allowed is {MaxDepth}, you specified {depth}.");
+
+            TempSlices.Clear();
+            GetSlicesAtDepth(depth - 1, 0, Levels, TempSlices);
+
+            var slices = TempSlices;
+            for (int sliceIndex = 0; sliceIndex < slices.Count; sliceIndex++)
+            {
+                var parentSlice = slices[sliceIndex];
+                var parentRange = parentSlice.Range;
+                parentSlice.Children = new PopulationLevel[percents[sliceIndex].Length];
+                var ranges = IndexRange.CalculatePercentageRanges(parentRange.StartIndex, parentRange.Length, percents[sliceIndex]);
+                for (int rangeIndex = 0; rangeIndex < ranges.Length; rangeIndex++)
+                    parentSlice.Children[rangeIndex] = new PopulationLevel(ranges[rangeIndex]);
+            }
+        }
+
+        /// <summary>
+        /// Creates a slice of the total population at a given level for a specific sibling of that level.
+        /// This version allows specifying the percentages for each individual child.
+        /// <seealso cref="Slice(int, float[])"/>
+        /// </summary>
+        /// <param name="depth"></param>
+        /// <param name="childIndex"></param>
+        /// <param name="percents"></param>
+        public PopulationLevel JaggedSlice(int depth, int depthRoot, int childIndex, float[] percents)
+        {
+            Assert.IsTrue(depth > 0, "A depth of zero cannot be specified as that already exists as the root.");
+            Assert.IsTrue(depth <= this.MaxDepth, $"The depth specified is too great to be made the children of the current max depth. The current max depth allowed is {MaxDepth}, you specified {depth}.");
+
+            TempSlices.Clear();
+            GetSlicesAtDepth(depth - 1, 0, Levels, TempSlices);
+
+            int si = childIndex;
+            var slices = TempSlices;
+            var parentSlice = slices[si];
+            var parentRange = parentSlice.Range;
+            parentSlice.Children = new PopulationLevel[percents.Length];
+            var ranges = IndexRange.CalculatePercentageRanges(parentRange.StartIndex, parentRange.Length, percents);
+            for (int ri = 0; ri < ranges.Length; ri++)
+                parentSlice.Children[ri] = new PopulationLevel(ranges[ri]);
+
+            return parentSlice;
         }
 
         /// <summary>
@@ -264,7 +320,8 @@ namespace ProceduralPopulationDatabase
         /// </summary>
         public static void ResetCache()
         {
-            TempSlices = null;
+            TempSlices = new List<PopulationLevel>(8);
+            TempRanges = new(16);
         }
 
         #endregion

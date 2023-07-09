@@ -12,7 +12,7 @@ namespace ProceduralPopulationDatabase
     /// </summary>
     public class Database
     {
-        public readonly PopulationTree TotalPopulation;
+        public readonly PopulationTree Tree;
         protected NativeArray<ulong> States;
         protected Random Randomizer;
 
@@ -24,7 +24,7 @@ namespace ProceduralPopulationDatabase
         #region Public Methods
         public Database(int seed, PopulationTree totalPopulation)
         {
-            TotalPopulation = totalPopulation;
+            Tree = totalPopulation;
             States = new(totalPopulation.PopulationSize, Allocator.Persistent, NativeArrayOptions.ClearMemory);
             Randomizer = new Random(seed);
         }
@@ -45,7 +45,7 @@ namespace ProceduralPopulationDatabase
         {
             UnsafeUtility.MemClear(
                     NativeArrayUnsafeUtility.GetUnsafeBufferPointerWithoutChecks(States),
-                    UnsafeUtility.SizeOf<ulong>() * TotalPopulation.PopulationSize);
+                    UnsafeUtility.SizeOf<ulong>() * Tree.PopulationSize);
         }
 
         /// <summary>

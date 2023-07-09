@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
@@ -9,7 +10,7 @@ namespace ProceduralPopulationDatabase
     /// A sample of a total population as the result of a query.
     /// This is a monadic type that can be used to chain queries together.
     /// </summary>
-    public sealed class PopulationSample
+    public sealed class PopulationSample : IEnumerable<int>
     {
         static List<IndexRange> TempList = new(16);
         static List<IndexRange> TempList2 = new(16);
@@ -20,8 +21,26 @@ namespace ProceduralPopulationDatabase
         public int Count => Ranges.Select(range => range.Length).Sum();
 
 
+        IEnumerator<int> IEnumerable<int>.GetEnumerator()
+        {
+            for (int i = 0; i < Ranges.Count; i++)
+            {
+                for (int j = Ranges[i].StartIndex; j <= Ranges[i].EndIndex; j++)
+                    yield return j;
+            }
+        }
 
-        #region public
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            for (int i = 0; i < Ranges.Count; i++)
+            {
+                for (int j = Ranges[i].StartIndex; j <= Ranges[i].EndIndex; j++)
+                    yield return j;
+            }
+        }
+
+
+        #region Public
         /// <summary>
         /// 
         /// </summary>
