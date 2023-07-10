@@ -18,7 +18,7 @@ namespace ProceduralPopulationDatabase
 
         static readonly List<int> TempInUse = new(16);
         static readonly List<int> TempNotInUse = new(16); 
-        public static readonly uint InUseStateMask = 0x0000_0001;
+        public static readonly ulong InUseStateMask = 0x0000_0000_0000_0001;
 
 
         #region Public Methods

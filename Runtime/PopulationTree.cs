@@ -12,7 +12,7 @@ namespace ProceduralPopulationDatabase
     public class PopulationTree
     {
         static List<PopulationLevel> TempSlices = new(8);   //cached to help avoid garbage
-        static List<int> CachedRemap = new();
+        static readonly List<int> CachedRemap = new();
         static List<IndexRange> TempRanges = new(16);
         readonly PopulationLevel Levels;
         
