@@ -2,10 +2,12 @@
 A monadic queryable database-like structure for categorized populations.  
 
 <br />  
+
 ## Dependencies  
 [com.unity.collections]()  
 
 <br />  
+
 ## Population Census  
 
 One of the major parts of simulating a population is figuring out the distribution of certain sub-groups within that population. For example in a fantasy game you might expect a certain portion of the population to belong to each race within the game world - say, humans, orcs, and elves. You might also want to further sub-divide by factions such as gender, homeland, class/job, and any other number of elements within the game.  
